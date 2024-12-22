@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .input-section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .progress-bar-container {
+            position: relative;
+            background: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 20px;
+        }
+        .progress-bar {
+            background: #4CAF50;
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            background: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        ul li button {
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+        .diet-options ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calorie Tracker</h1>
+        <div class="input-section">
+            <label for="meal">Meal Type:</label>
+            <select id="meal-type">
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Snack">Snack</option>
+            </select>
+            <label for="meal">Meal:</label>
+            <input type="text" id="meal" placeholder="Enter meal name" list="past-meals">
+            <datalist id="past-meals"></datalist>
+            <label for="calories">Calories:</label>
+            <input type="number" id="calories" placeholder="Enter calories">
+            <button id="add-meal">Add Meal</button>
+        </div>
+        <div class="input-section">
+            <label for="water">Water Intake (ml):</label>
+            <input type="number" id="water" placeholder="Enter water intake">
+            <button id="add-water">Add Water</button>
+        </div>
+        <div class="settings">
+            <label for="target-calories">Target Calories:</label>
+            <input type="number" id="target-calories" placeholder="Set target calories">
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="progress-message"></p>
+        <ul id="meal-log"></ul>
+        <p id="water-intake">Total Water Intake: 0 ml</p>
+        <p id="remaining-calories">Remaining Calories: 2000</p>
+        <div class="diet-options">
+            <h2>Healthy Meal Suggestions</h2>
+            <div id="meal-suggestions">
+              <div id="meal-suggestions">
+                <h3>Low Carb - High Protein</h3>
+                <ul>
+                    <li>Grilled Chicken Salad - 430 calories (<a href="https://www.wellplated.com/grilled-chicken-salad/" target="_blank">Recipe</a>)</li>
+                    <li>Baked Salmon with Asparagus - 400 calories (<a href="https://www.twopeasandtheirpod.com/sheet-pan-baked-salmon/" target="_blank">Recipe</a>)</li>
+                    <li>Egg White Omelette - 134 calories (<a href="https://pickyeaterblog.com/how-to-make-the-perfect-healthy-omelet/" target="_blank">Recipe</a>)</li>
+                </ul>
+                <h3>Vegetarian</h3>
+                <ul>
+                    <li>Quinoa and Black Bean Bowl - 321 calories (<a href="https://www.elizabethrider.com/superfood-black-bean-quinoa-salad-recipe/" target="_blank">Recipe</a>)</li>
+                    <li>Vegetable Stir-fry - 250 calories (<a href="https://skinnyms.com/6-stir-fry-recipes-under-300-calories/" target="_blank">Recipe</a>)</li>
+                    <li>Caprese Salad - 250 calories (<a href="https://www.wholefoodsmarket.com/recipes/classic-caprese-salad" target="_blank">Recipe</a>)</li>
+                </ul>
+                <h3>Vegan</h3>
+                <ul>
+                    <li>Lentil Soup - 236 calories (<a href="https://www.noracooks.com/vegan-lentil-soup/" target="_blank">Recipe</a>)</li>
+                    <li>Avocado Toast - 170 calories (<a href="https://www.allrecipes.com/recipe/246803/avocado-toast-vegan/" target="_blank">Recipe</a>)</li>
+                    <li>Vegan Buddha Bowl - 479 calories (<a href="https://www.slenderkitchen.com/recipe/buddha-bowl" target="_blank">Recipe</a>)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mealTypeInput = document.getElementById('meal-type');
+            const mealInput = document.getElementById('meal');
+            const caloriesInput = document.getElementById('calories');
+            const waterInput = document.getElementById('water');
+            const targetCaloriesInput = document.getElementById('target-calories');
+            const mealLog = document.getElementById('meal-log');
+            const progressBar = document.getElementById('progress-bar');
+            const progressMessage = document.getElementById('progress-message');
+            const waterIntakeDisplay = document.getElementById('water-intake');
+            const remainingCaloriesDisplay = document.getElementById('remaining-calories');
+            const pastMeals = document.getElementById('past-meals');
+            const waterLog = document.getElementById('water-intake');
+            
+            let totalCalories = 0;
+            let targetCalories = 2000;
+            let totalWater = 0;
+            let selectedMealIndex = null; // Track the selected meal for editing
+
+            // Load saved data from localStorage
+            const savedMeals = JSON.parse(localStorage.getItem('meals')) || [];
+            const savedWater = JSON.parse(localStorage.getItem('water')) || [];
+            const savedTarget = parseInt(localStorage.getItem('targetCalories')) || 2000;
+
+            targetCalories = savedTarget;
+            targetCaloriesInput.value = targetCalories;
+
+            savedWater.forEach(({ date, water }) => {
+                addWaterToLog(date, water);
+            });
+
+            savedMeals.forEach(({ type, meal, calories }, index) => {
+                addMealToLog(type, meal, calories, index);
+                addMealToDatalist(meal, type, index);
+            });
+
+            function updateProgress() {
+                const progress = Math.min((totalCalories / targetCalories) * 100, 100);
+                progressBar.style.width = `${progress}%`;
+
+                remainingCaloriesDisplay.textContent = `Remaining Calories: ${Math.max(targetCalories - totalCalories, 0)}`;
+
+                if (progress >= 100) {
+                    progressMessage.textContent = "Congratulations! You've reached your target!";
+                } else if (progress >= 90) {
+                    progressMessage.textContent = "Warning: You are close to exceeding your calorie limit.";
+                } else if (progress >= 75) {
+                    progressMessage.textContent = "Almost there! Keep going!";
+                } else if (progress >= 50) {
+                    progressMessage.textContent = "Halfway there! Keep it up!";
+                } else if (progress > 0) {
+                    progressMessage.textContent = "Great start!";
+                } else {
+                    progressMessage.textContent = "Let's begin tracking!";
+                }
+            }
+
+            function addMealToLog(type, meal, calories, index) {
+                const li = document.createElement('li');
+                li.innerHTML = `${type}: ${meal} - ${calories} calories <button class='edit'>Edit</button><button class='remove'>Remove</button>`;
+                li.querySelector('.edit').addEventListener('click', () => {
+                    selectedMealIndex = index;
+                    mealInput.value = meal;
+                    caloriesInput.value = calories;
+                    mealTypeInput.value = type;
+                    mealLog.removeChild(li);
+                    totalCalories -= calories;
+                    updateProgress();
+                });
+                li.querySelector('.remove').addEventListener('click', () => {
+                    mealLog.removeChild(li);
+                    totalCalories -= calories;
+                    updateProgress();
+                });
+                mealLog.appendChild(li);
+                totalCalories += calories;
+                updateProgress();
+            }
+
+            function addMealToDatalist(meal, type, index) {
+                if (!Array.from(pastMeals.options).some(option => option.value === meal)) {
+                    const option = document.createElement('option');
+                    option.value = meal;
+                    option.dataset.type = type;  // Save type for later
+                    option.dataset.index = index;  // Save index for later
+                    pastMeals.appendChild(option);
+                }
+            }
+
+            function addWaterToLog(date, water) {
+                const li = document.createElement('li');
+                li.innerHTML = `${date}: ${water} ml <button class='edit-water'>Edit</button><button class='remove-water'>Remove</button>`;
+                li.querySelector('.edit-water').addEventListener('click', () => {
+                    waterInput.value = water;
+                    waterLog.removeChild(li);
+                    totalWater -= water;
+                    updateWaterDisplay();
+                });
+                li.querySelector('.remove-water').addEventListener('click', () => {
+                    waterLog.removeChild(li);
+                    totalWater -= water;
+                    updateWaterDisplay();
+                });
+                waterLog.appendChild(li);
+                totalWater += water;
+                updateWaterDisplay();
+            }
+
+            function updateWaterDisplay() {
+                waterIntakeDisplay.textContent = `Total Water Intake: ${totalWater} ml`;
+            }
+
+            document.getElementById('add-meal').addEventListener('click', () => {
+                const type = mealTypeInput.value;
+                const meal = mealInput.value;
+                const calories = parseInt(caloriesInput.value);
+
+                if (meal && calories > 0) {
+                    if (selectedMealIndex !== null) {
+                        // Update existing meal
+                        savedMeals[selectedMealIndex] = { type, meal, calories };
+                        selectedMealIndex = null;
+                    } else {
+                        // Add new meal
+                        savedMeals.push({ type, meal, calories });
+                    }
+                    localStorage.setItem('meals', JSON.stringify(savedMeals));
+                    addMealToLog(type, meal, calories, savedMeals.length - 1);
+                    addMealToDatalist(meal, type, savedMeals.length - 1);
+                    mealInput.value = '';
+                    caloriesInput.value = '';
+                } else {
+                    alert('Please enter a valid meal name and positive calories.');
+                }
+            });
+
+            document.getElementById('add-water').addEventListener('click', () => {
+                const water = parseInt(waterInput.value);
+                const date = new Date().toLocaleDateString();
+
+                if (water > 0) {
+                    addWaterToLog(date, water);
+                    savedWater.push({ date, water });
+                    localStorage.setItem('water', JSON.stringify(savedWater));
+                    waterInput.value = '';
+                    totalWater += water;
+                    updateWaterDisplay();
+                } else {
+                    alert('Please enter a valid water intake.');
+                }
+            });
+
+            // When a user selects a meal from the datalist
+            mealInput.addEventListener('input', () => {
+                const selectedOption = pastMeals.querySelector(`option[value="${mealInput.value}"]`);
+                if (selectedOption) {
+                    const index = selectedOption.dataset.index;
+                    const selectedMeal = savedMeals[index];
+                    if (selectedMeal) {
+                        mealInput.value = selectedMeal.meal;
+                        caloriesInput.value = selectedMeal.calories;
+                        mealTypeInput.value = selectedMeal.type;  // Also update the type
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
